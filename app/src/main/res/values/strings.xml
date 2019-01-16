@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Vertilogic</string>
+    <string name="action_settings">Settings</string>
+    <string name="photo_profile">Photo profile</string>
+    <string name="detail">Detail</string>
+    <string name="title_activity_detail">DetailActivity</string>
+    <string name="personal_info">Personal info</string>
+    <string name="company">Company</string>
+    <string name="address">Address</string>
+    <string name="icon">icon</string>
+    <string name="title_activity_maps">Map</string>
+</resources>
