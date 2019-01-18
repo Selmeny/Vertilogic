@@ -1,10 +1,6 @@
 package com.dicoding.paul.vertilogic;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,20 +9,19 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.dicoding.paul.vertilogic.adapter.UserAdapter;
-import com.dicoding.paul.vertilogic.apiloader.UserAsyncLoader;
 import com.dicoding.paul.vertilogic.model.UserModel;
+import com.dicoding.paul.vertilogic.presenter.UserPresenter;
+import com.dicoding.paul.vertilogic.view.UserView;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<UserModel>> {
+public class MainActivity extends AppCompatActivity implements UserView {
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.rv_main) RecyclerView recyclerView;
     @BindView(R.id.pb_main) ProgressBar progressBar;
-
-    private UserAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,40 +29,31 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        //Set toolbar and show progressBar
         setSupportActionBar(toolbar);
         progressBar.setVisibility(View.VISIBLE);
 
-        //Initiate the loader
-        getSupportLoaderManager().initLoader(1, null, this);
-
-        //Show the data through user interface
-        showRecyclerview();
-    }
-
-    @NonNull
-    @Override
-    public Loader<ArrayList<UserModel>> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return new UserAsyncLoader(this);
+        //Create an object of UserPresenter, then send the data to userView
+        final UserPresenter presenter = new UserPresenter(this);
+        presenter.new StartLoader(this, getSupportLoaderManager());
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader<ArrayList<UserModel>> loader, ArrayList<UserModel> data) {
-        adapter.setUserModelArrayList(data);
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<ArrayList<UserModel>> loader) {
-        adapter.setUserModelArrayList(null);
-        progressBar.setVisibility(View.GONE);
-    }
-
-    private void showRecyclerview() {
+    public void showUser(ArrayList<UserModel> data) {
+        //Binding views
         ButterKnife.bind(this);
-        adapter = new UserAdapter(this);
+
+        //Create an object of Adapter, retrieve data, and set the data on adapter
+        UserAdapter adapter = new UserAdapter(this);
+        adapter.setUserModelArrayList(data);
         adapter.notifyDataSetChanged();
+
+        //Set recyclerView and attach the adapter on it
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
+
+        //Clear progressBar
+        progressBar.setVisibility(View.GONE);
     }
 }
